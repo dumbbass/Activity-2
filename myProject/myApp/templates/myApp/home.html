@@ -1,0 +1,276 @@
+{% extends 'myApp/base.html' %}
+
+{% block title %}Dashboard Home{% endblock %}
+
+{% block header %}
+<div class="dashboard-header">
+    <div class="dashboard-header-content">
+        <div class="dashboard-title">
+            <h1>Dashboard Overview</h1>
+            <p id="greeting">Welcome back! Here's what's happening today</p>
+        </div>
+        <div class="dashboard-actions">
+            <button class="dashboard-btn secondary" id="refreshBtn">
+                <i class="fas fa-sync-alt"></i>
+                Refresh Data
+            </button>
+            <div class="notification-badge" data-count="3">
+                <button class="dashboard-btn secondary">
+                    <i class="fas fa-bell"></i>
+                    Notifications
+                </button>
+            </div>
+            <button class="dashboard-btn primary">
+                <i class="fas fa-plus"></i>
+                New Project
+            </button>
+        </div>
+    </div>
+    
+    <div class="dashboard-stats">
+        <div class="stat-item">
+            <div class="stat-icon blue">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-info">
+                <h4>Current Time</h4>
+                <p id="current-time">Loading...</p>
+            </div>
+        </div>
+        
+        <div class="stat-item">
+            <div class="stat-icon green">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-info">
+                <h4>Active Users</h4>
+                <p id="active-users">24 online</p>
+            </div>
+        </div>
+        
+        <div class="stat-item">
+            <div class="stat-icon orange">
+                <i class="fas fa-calendar"></i>
+            </div>
+            <div class="stat-info">
+                <h4>Today's Date</h4>
+                <p id="current-date">Loading...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add these modal elements -->
+<div id="notificationModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Notifications</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="notification-item unread">
+                <i class="fas fa-user-plus"></i>
+                <div class="notification-content">
+                    <p>New user registration</p>
+                    <span>2 minutes ago</span>
+                </div>
+            </div>
+            <div class="notification-item unread">
+                <i class="fas fa-shopping-cart"></i>
+                <div class="notification-content">
+                    <p>New order received</p>
+                    <span>15 minutes ago</span>
+                </div>
+            </div>
+            <div class="notification-item unread">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div class="notification-content">
+                    <p>Low stock alert</p>
+                    <span>1 hour ago</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="newProjectModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Create New Project</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="newProjectForm">
+                <div class="form-group">
+                    <label for="projectName">Project Name</label>
+                    <input type="text" id="projectName" required>
+                </div>
+                <div class="form-group">
+                    <label for="projectDescription">Description</label>
+                    <textarea id="projectDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="projectDeadline">Deadline</label>
+                    <input type="date" id="projectDeadline">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="dashboard-btn primary">Create Project</button>
+                    <button type="button" class="dashboard-btn secondary" onclick="closeModal('newProjectModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="cards-container">
+    {% for item in data %}
+        {% with item as card %}
+            {% include "myApp/components/stat_card.html" %}
+        {% endwith %}
+    {% endfor %}
+</div>
+
+<script>
+    // Update time and date
+    function updateDateTime() {
+        const timeElement = document.getElementById('current-time');
+        const dateElement = document.getElementById('current-date');
+        const greetingElement = document.getElementById('greeting');
+        const now = new Date();
+        
+        // Update time
+        timeElement.textContent = now.toLocaleTimeString();
+        
+        // Update date
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        dateElement.textContent = now.toLocaleDateString(undefined, options);
+        
+        // Update greeting based on time of day
+        const hour = now.getHours();
+        let greeting = '';
+        if (hour < 12) greeting = 'Good morning';
+        else if (hour < 18) greeting = 'Good afternoon';
+        else greeting = 'Good evening';
+        greetingElement.textContent = `${greeting}! Here's what's happening today`;
+    }
+    
+    // Simulate active users update
+    function updateActiveUsers() {
+        const usersElement = document.getElementById('active-users');
+        const randomUsers = Math.floor(Math.random() * 30) + 15;
+        usersElement.textContent = `${randomUsers} online`;
+    }
+    
+    // Modal functionality
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = "block";
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+    }
+
+    // Close modal when clicking outside or on X button
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = "none";
+        }
+    }
+
+    // Add click events to all close buttons
+    document.querySelectorAll('.close').forEach(button => {
+        button.addEventListener('click', function() {
+            const modal = this.closest('.modal');
+            if (modal) {
+                closeModal(modal.id);
+            }
+        });
+    });
+
+    // Add click events to buttons
+    document.querySelector('.notification-badge').addEventListener('click', function() {
+        openModal('notificationModal');
+        // Reset notification count
+        this.setAttribute('data-count', '0');
+    });
+
+    document.querySelector('.dashboard-btn.primary').addEventListener('click', function() {
+        openModal('newProjectModal');
+    });
+
+    // Handle form submission
+    document.getElementById('newProjectForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const projectData = {
+            name: document.getElementById('projectName').value,
+            description: document.getElementById('projectDescription').value,
+            deadline: document.getElementById('projectDeadline').value
+        };
+        console.log('New project data:', projectData);
+        // Here you would typically send this data to your backend
+        alert('Project created successfully!');
+        closeModal('newProjectModal');
+        this.reset();
+    });
+
+    // Enhanced refresh functionality
+    document.getElementById('refreshBtn').addEventListener('click', function() {
+        this.style.transform = 'rotate(360deg)';
+        this.style.transition = 'transform 0.5s';
+        
+        // Show loading state
+        this.disabled = true;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+        
+        // Simulate data refresh
+        setTimeout(() => {
+            updateDateTime();
+            updateActiveUsers();
+            
+            // Reset button
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh Data';
+            this.style.transform = 'none';
+            
+            // Show success message
+            showToast('Data refreshed successfully!');
+        }, 1000);
+    });
+
+    // Toast notification
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 100);
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 300);
+        }, 3000);
+    }
+
+    // Initialize
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+    setInterval(updateActiveUsers, 30000); // Update active users every 30 seconds
+    
+    // Add hover effect to cards
+    document.querySelectorAll('.stat-card').forEach(card => {
+        card.addEventListener('mouseover', function() {
+            this.style.transform = 'translateY(-5px)';
+        });
+        card.addEventListener('mouseout', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+</script>
+{% endblock %} 

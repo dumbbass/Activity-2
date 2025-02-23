@@ -1,0 +1,23 @@
+<div class="card">
+    <div class="card-icon">
+        {% if icon %}
+            <i class="fas {{ icon }}"></i>
+        {% endif %}
+    </div>
+    <div class="card-content">
+        <h3>{{ title }}</h3>
+        <div class="count">
+            {% if is_currency %}
+                ${{ count|floatformat:2 }}
+            {% else %}
+                {{ count }}
+            {% endif %}
+        </div>
+    </div>
+    {% if trend %}
+    <div class="card-trend {{ trend_direction }}">
+        <span>{{ trend }}%</span>
+        <i class="fas {% if trend_direction == 'up' %}fa-arrow-up{% else %}fa-arrow-down{% endif %}"></i>
+    </div>
+    {% endif %}
+</div> 

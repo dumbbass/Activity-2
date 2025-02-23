@@ -1,0 +1,54 @@
+{% extends 'myApp/base.html' %}
+
+{% block title %}Settings Dashboard{% endblock %}
+
+{% block header %}Settings{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <div class="settings-section">
+        <h2>General Settings</h2>
+        <div class="settings-grid">
+            {% for item in settings.general %}
+            <div class="setting-item">
+                <label for="{{ item.name|slugify }}">{{ item.name }}</label>
+                {% if item.value == True or item.value == False %}
+                    <label class="switch">
+                        <input type="checkbox" id="{{ item.name|slugify }}" 
+                               {% if item.value %}checked{% endif %}>
+                        <span class="slider round"></span>
+                    </label>
+                {% else %}
+                    <input type="text" id="{{ item.name|slugify }}" value="{{ item.value }}">
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="settings-section">
+        <h2>Security Settings</h2>
+        <div class="settings-grid">
+            {% for item in settings.security %}
+            <div class="setting-item">
+                <label for="{{ item.name|slugify }}">{{ item.name }}</label>
+                {% if item.value == True or item.value == False %}
+                    <label class="switch">
+                        <input type="checkbox" id="{{ item.name|slugify }}" 
+                               {% if item.value %}checked{% endif %}>
+                        <span class="slider round"></span>
+                    </label>
+                {% else %}
+                    <input type="text" id="{{ item.name|slugify }}" value="{{ item.value }}">
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="settings-actions">
+        <button class="btn primary">Save Changes</button>
+        <button class="btn">Reset</button>
+    </div>
+</div>
+{% endblock %} 

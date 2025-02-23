@@ -1,0 +1,38 @@
+<div class="stat-card {{ card.card_type|default:'default' }}">
+    <div class="stat-card-header">
+        <div class="stat-card-icon">
+            {% if card.icon %}
+                <i class="fas {{ card.icon }}"></i>
+            {% endif %}
+        </div>
+        <div class="stat-card-title">
+            <h3>{{ card.title }}</h3>
+            {% if card.subtitle %}
+                <span class="subtitle">{{ card.subtitle }}</span>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="stat-card-content">
+        <div class="stat-value">
+            {% if card.is_currency %}
+                ${{ card.count|floatformat:2 }}
+            {% else %}
+                {{ card.count }}
+            {% endif %}
+        </div>
+        
+        {% if card.trend %}
+        <div class="stat-trend {{ card.trend_direction }}">
+            <span>{{ card.trend }}%</span>
+            <i class="fas {% if card.trend_direction == 'up' %}fa-arrow-up{% else %}fa-arrow-down{% endif %}"></i>
+        </div>
+        {% endif %}
+        
+        {% if card.footer_text %}
+        <div class="stat-footer">
+            {{ card.footer_text }}
+        </div>
+        {% endif %}
+    </div>
+</div> 

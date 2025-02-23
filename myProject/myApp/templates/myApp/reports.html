@@ -1,0 +1,35 @@
+{% extends 'myApp/base.html' %}
+{% load custom_filters %}
+
+{% block title %}Reports Dashboard{% endblock %}
+
+{% block header %}Reports Overview{% endblock %}
+
+{% block content %}
+<div class="reports-container">
+    {% for report in reports %}
+    <div class="report-card">
+        <div class="report-header">
+            <h3>{{ report.report_name }}</h3>
+            <span class="status-badge {{ report.status|lower }}">{{ report.status }}</span>
+        </div>
+        <div class="report-details">
+            <p><strong>Period:</strong> {{ report.period }}</p>
+            {% if report.total_sales %}
+            <p><strong>Total Sales:</strong> {{ report.total_sales|currency_format }}</p>
+            {% endif %}
+            {% if report.total_users %}
+            <p><strong>Total Users:</strong> {{ report.total_users }}</p>
+            {% endif %}
+            {% if report.items_low %}
+            <p><strong>Items Low in Stock:</strong> {{ report.items_low }}</p>
+            {% endif %}
+        </div>
+        <div class="report-actions">
+            <button class="btn">Download PDF</button>
+            <button class="btn">Share</button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %} 
